@@ -35,6 +35,7 @@
                 left: 0;
                 right: 0;
                 margin: auto;
+                padding: 24px;
             }
             #code {
                 float: left;
@@ -153,8 +154,9 @@
             together.setHours(20);
 
             var now = new Date();
-            var text = now.toLocaleString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'}).
-                replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2');
+            var m = now.getMonth() + 1;
+            var month = m < 10 ? "0" + m : "" + m;
+            var text = now.getFullYear() + "-" + month + "-" + now.getDate();
             $("#now").text(text);
 
             setTimeout(function () {
