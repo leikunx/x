@@ -19,8 +19,10 @@ $(function () {
     gardenCtx.globalCompositeOperation = "lighter";
     garden = new Garden(gardenCtx, gardenCanvas);
 
-    $("#content").css("width", $loveHeart.width() + $("#code").width());
+    var pageWidth = $loveHeart.width() + $("#code").width();
+    $("#content").css("width", pageWidth);
     $("#content").css("height", Math.max($loveHeart.height(), $("#code").height()));
+    $("#mainDiv").css("width", pageWidth + 48);
 
     // renderLoop
     setInterval(function () {
