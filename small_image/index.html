@@ -38,12 +38,16 @@
             #text {
                 margin-left: 12px;
             }
-            a {
+            #downloads {
+                display: flex;
+            }
+            button {
                 margin-left: 30px;
                 padding: 2px 16px;
                 text-decoration: none;
-                color: black;
+                color: rgb(200, 200, 200);
                 background-color: rgb(246, 248, 250);
+                font-size: 24px;
                 cursor: pointer;
                 border-radius: 6px;
                 border: solid 2px rgba(27, 31, 36, 0.15);
@@ -68,39 +72,79 @@
                 <input type="text" class="in" id="newWidth" />
                 <div id="text">新高度：</div>
                 <input type="text" class="in" id="newHeight" />
-                <a id="download">下载图片</a>
+            </div>
+            <div id="downloads">
+                <button id="download_jpg">下载jpg格式文件</a>
+                <button id="download_png">下载png格式文件</a>
             </div>
             <img id="photo" />
         </div>
         <script type="text/javascript">
-            $("#image_file").change(function () {
+            $("#image_file").change(function() {
                 var file = $(this)[0].files[0];
                 $("img#photo").attr("src", URL.createObjectURL(file));
                 function show() {
                     var image = document.getElementById("photo");
                     $("#oldWidth").val(image.naturalWidth);
                     $("#oldHeight").val(image.naturalHeight);
+                    resetButtonStatus();
                 }
                 setTimeout(show, 100);
                 setTimeout(show, 1000);
             });
-            function getImageUrl(id, targetWidth, targetHeight) {
+            function setButtonsColor(color) {
+                $("#download_jpg").css("color", color);
+                $("#download_png").css("color", color);
+            }
+            function setButtonsDisabled(status) {
+                if (status) {
+                    setButtonsColor("rgb(200, 200, 200)")
+                } else {
+                    setButtonsColor("rgb(20, 20, 20)");
+                }
+            }
+            function isInputsReady() {
+                var oldWidth = parseInt($("#oldWidth").val());
+                var oldHeight = parseInt($("#oldHeight").val());
+                var width = parseInt($("#newWidth").val());
+                var height = parseInt($("#newHeight").val());
+                return oldWidth > 0 && oldHeight > 0 && width > 0 && height > 0;
+            }
+            function resetButtonStatus() {
+                if (isInputsReady()) {
+                    setButtonsDisabled(false);
+                } else {
+                    setButtonsDisabled(true);
+                }
+            }
+            $("#newWidth").bind("input propertychange", resetButtonStatus);
+            $("#newHeight").bind("input propertychange", resetButtonStatus);
+            function getImageUrl(id, targetWidth, targetHeight, targetFileSuffix) {
                 var image = document.getElementById(id);
                 var canvas = document.createElement("canvas");
                 canvas.width = targetWidth;
                 canvas.height = targetHeight;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, 0, 0, targetWidth, targetHeight);
+                if (targetFileSuffix === "png") {
+                    return canvas.toDataURL("image/png");
+                }
                 return canvas.toDataURL("image/jpeg");
             }
-            $("#download").click(function() {
+            function download(fileSuffix) {
                 var link = document.createElement("a");
-                link.download = "resized_photo.jpg";
+                link.download = `resized_photo.${fileSuffix}`;
                 var width = parseInt($("#newWidth").val());
                 var height = parseInt($("#newHeight").val());
-                var url = getImageUrl("photo", width, height);
+                var url = getImageUrl("photo", width, height, fileSuffix);
                 link.href = url;
                 link.click();
+            }
+            $("#download_jpg").click(function() {
+                download("jpg");
+            });
+            $("#download_png").click(function() {
+                download("png");
             });
         </script>
     </body>
